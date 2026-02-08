@@ -1,5 +1,5 @@
 
-# gomicide rework loadscreen
+# loadscreen
 
 supermega chatgpt vibecoding
 
