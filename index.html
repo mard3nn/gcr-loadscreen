@@ -1,0 +1,298 @@
+<html>
+<head>
+<script>
+    let photos = [
+        "imgs/1.png",
+        "imgs/2.png"
+    ]
+</script>
+
+<meta charset="UTF-8">
+
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/main_1.css">
+    <link rel="icon" href="images/fav.ico">
+
+    <style>
+        
+        .logo-container {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        
+        .server-logo {
+            display: block;
+            margin: 0 auto 15px auto;
+            max-width: 270px; 
+            width: 15vw; 
+            min-width: 120px; 
+            height: auto;
+            opacity: 0.9;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+        }
+
+
+        .server-logo:hover {
+            opacity: 1;
+            transform: scale(1.05);
+        }
+
+        
+        .server-title {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 0;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+    </style>
+
+    <title>GOMIGRAD.com | Load Screen</title>
+</head>
+
+<body>
+
+    <audio id="backgroundMusic" loop>
+        <source src="music/old.mp4" type="audio/mpeg">
+
+    </audio>
+
+    <div class="background1" id="1" style="
+    position: absolute;
+    
+    background-position: center center;
+    background-repeat: no-repeat;
+    width: 100vw;
+    height: 100vh;
+    background-size: cover;
+    z-index: -1;
+    "></div>
+
+    <div class="background2" id="2" style="
+    position: absolute;
+
+    background-position: center center;
+    background-repeat: no-repeat;
+    width: 100vw;
+    height: 100vh;
+    background-size: cover;
+    z-index: -1;
+    "></div>
+
+    <div id="load" style="
+    width: 512px;
+    height: 512px;
+    position: absolute;
+    background-repeat: no-repeat;
+    background-size: cover;
+    z-index: -1;
+    opacity: 0;
+    "></div>
+
+    <div style="
+        height: 50%;
+        display: flex;
+        flex-direction: column;
+    ">
+        <div style="width: 100%; flex: 1;"></div>
+        <div style="
+            width: 100%;
+            height: auto;
+        ">
+            <div class="logo-container">
+                <img src="gomigradlogo/gomigrad.png" alt="NGRAD Logo" class="server-logo">
+                <h1 id="servername" class="server-title">GOMIGRAD.COM</h1>
+            </div>
+
+            <p id="mapname" style="
+            text-align: center;
+            font-size: 3em;
+            ">cs_office</p>
+        </div>
+    </div>
+
+    <div id="bottom" style="
+    height: 50%;
+    ">
+        <p id="textstatus" style="
+        position: relative;
+        text-align: center;
+        top: 0.575em;
+        font-size: 20;
+        ">Подключение...</p>
+
+        <div id="history" style="
+            width: 100%;
+            height: 0px;
+            position: relative;
+            top: 1.5em;
+        "></div>
+    </div>
+
+<script>
+
+    const backgroundMusic = document.getElementById('backgroundMusic');
+    
+
+    backgroundMusic.addEventListener('loadedmetadata', function() {
+        backgroundMusic.volume = 0.01;
+    });
+    
+
+    backgroundMusic.addEventListener('play', function() {
+        backgroundMusic.volume = 0.01; 
+    });
+
+    window.addEventListener('load', function() {
+
+        backgroundMusic.volume = 0.01; 
+        backgroundMusic.play().catch(error => {
+            console.log("Автовоспроизведение заблокировано. Музыка включится после клика.");
+        });
+    });
+    
+    document.addEventListener('click', function() {
+        if (backgroundMusic.paused) {
+            backgroundMusic.volume = 0.02; 
+            backgroundMusic.play();
+        }
+    }, { once: true });
+
+    
+    let usesPhotos = []
+
+    let background1 = document.getElementById("1")
+    let background2 = document.getElementById("2")
+    let load = document.getElementById("load")
+    
+    background2.style.opacity = 0
+    
+    let mode = 0
+
+    let rand = 1
+
+    let animOptions = {
+        duration: 3000, 
+        fill: 'forwards'
+    }
+
+    function slide() {
+        if (usesPhotos.length == 0) {
+            for (let i = 0; i < photos.length; i++) {
+                usesPhotos[i] = photos[i]
+            }
+        }
+
+        if (mode == 0) {
+            mode = 1
+
+            background2.style.backgroundImage = load.style.backgroundImage
+
+            background1.animate([
+                {opacity: 1},{opacity: 0}
+            ],animOptions)
+
+            background2.animate([
+                {opacity: 0},{opacity: 1}
+            ],animOptions)
+        } else {
+            mode = 0
+
+            background1.style.backgroundImage = load.style.backgroundImage
+
+            background1.animate([
+                {opacity: 0},{opacity: 1}
+            ],animOptions)
+
+            background2.animate([
+                {opacity: 1},{opacity: 0}
+            ],animOptions)
+        }
+
+        rand = Math.floor(Math.random() * (usesPhotos.length - 1))
+
+        load.style.backgroundImage = 'url("' + usesPhotos[rand] + '")'
+
+        usesPhotos.splice(rand,1)
+    }
+
+    slide()
+    slide()
+
+    setInterval(slide,3000) 
+
+    let fileNeeded = 0
+    let fileTotal = 0
+
+    SetFilesTotal = function(total) {fileTotal = total}
+    SetFilesNeeded = function(needed) {fileNeeded = needed}
+
+    window.GameDetails = function(servername,serverurl,mapname,maxplayers,steamid,gamemode,volume,language) {
+        document.getElementById("servername").innerHTML = servername
+        document.getElementById("mapname").innerHTML = mapname
+    }
+
+    let loadbar = document.getElementById("loadbar")
+    let textstatus = document.getElementById("textstatus")
+
+    function updateProgress() {
+        /*var progress = (fileTotal > 0) ?
+            (Math.max(0,fileTotal - fileNeeded) / fileTotal) : 1
+
+            document.getElementById("dev").innerHTML = fileTotal + "|" + fileNeeded
+
+            loadbar.style.right = progress * 100 + "%"*/
+    }
+
+    window.DownloadingFile = function(filePath) {
+        fileNeeded = Math.max(0,fileNeeded - 1)
+        
+        textstatus.innerHTML = "Downloading " + filePath
+        
+        updateProgress()
+    }
+
+    window.SetStatusChanged = function(status) {
+        if (status == 'Sending Client info...') {
+            filesNeeded = 0
+            updateProgress()
+        }
+
+        addHistory(textstatus.innerHTML)
+        textstatus.innerHTML = status
+    }
+
+    updateProgress()
+
+    let anchor = document.getElementById("history")
+    let history = []
+
+    function addHistory(msg) {
+        let text = document.createElement("p")
+        text.classList.add("log")
+        text.innerHTML = msg
+
+        anchor.insertBefore(text,anchor.childNodes[0])
+
+        history.push(text)
+
+        let max = (document.getElementById("bottom").clientHeight - 100) / text.clientHeight
+       
+        for (let i = 0;i < history.length; i++) {
+            let text = history[i]
+
+            let opacity = 1 - (history.length - i - 1) / max
+            text.style.opacity = opacity
+            //text.innerHTML = opacity
+
+            if (i > max) {
+                anchor.removeChild(history[0])
+                history.splice(0,1)
+            }
+        }
+    }
+</script>
+</body>
+</html>
